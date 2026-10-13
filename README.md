@@ -1,212 +1,419 @@
-# 🛒 Costco Grocery Price Prediction & Analytics App
+🛒 Costco Grocery Price Prediction & Analytics App
 
-An end-to-end, production-grade Machine Learning application and interactive Streamlit web interface designed to predict grocery prices, estimate promotional impact, and benchmark price points across Costco wholesale categories.
+An end-to-end machine learning application with an interactive Streamlit web interface designed to predict grocery prices, estimate promotional discounts, and benchmark product prices across Costco wholesale categories.
 
-Built from a scraped Costco catalog dataset (`GroceryDataset.csv` / `costco_grocery.csv`).
-
----
-
-## 📌 Table of Contents
-1. [Project Overview & Business Value](#-project-overview--business-value)
-2. [Project Architecture & Directory Structure](#-project-architecture--directory-structure)
-3. [Step 1: Data Exploration & Cleaning](#-step-1-data-exploration--cleaning)
-4. [Step 2: Feature Engineering & Extraction](#-step-2-feature-engineering--extraction)
-5. [Step 3: Modeling & Cross-Validation](#-step-3-modeling--cross-validation)
-6. [Step 4: Data Leakage Check (Crucial ML Engineering)](#-step-4-data-leakage-check-crucial-ml-engineering)
-7. [Step 5: Model Performance Benchmarks](#-step-5-model-performance-benchmarks)
-8. [Step 6: Streamlit Web Application](#-step-6-streamlit-web-application)
-9. [Setup & Quickstart Guide](#-setup--quickstart-guide)
-10. [Model Limitations & Real-World Considerations](#-model-limitations--real-world-considerations)
+Built using a scraped Costco catalog dataset ("GroceryDataset.csv" / "costco_grocery.csv").
 
 ---
 
-## 🎯 Project Overview & Business Value
+📌 Table of Contents
 
-Wholesale grocery retailers like Costco operate with a distinct pricing dynamic characterized by bulk multipacks, commercial quantities, luxury wholesale items (such as caviar kilos and whole Parmigiano Reggiano wheels), and intermittent manufacturer promotions.
+1. "Project Overview & Business Value" (#-project-overview--business-value)
+2. "Project Architecture & Directory Structure" (#-project-architecture--directory-structure)
+3. "Step 1: Data Exploration & Cleaning" (#-step-1-data-exploration--cleaning)
+4. "Step 2: Feature Engineering & Extraction" (#-step-2-feature-engineering--extraction)
+5. "Step 3: Modeling & Cross-Validation" (#-step-3-modeling--cross-validation)
+6. "Step 4: Data Leakage Check" (#-step-4-data-leakage-check-crucial-ml-engineering)
+7. "Step 5: Model Performance Benchmarks" (#-step-5-model-performance-benchmarks)
+8. "Step 6: Streamlit Web Application" (#-step-6-streamlit-web-application)
+9. "Setup & Quickstart Guide" (#-setup--quickstart-guide)
+10. "Model Limitations & Real-World Considerations" (#-model-limitations--real-world-considerations)
+
+---
+
+🎯 Project Overview & Business Value
+
+Wholesale grocery retailers like Costco have distinctive pricing patterns involving bulk multipacks, commercial quantities, premium wholesale products, and occasional manufacturer promotions.
 
 This application provides:
-1. **Accurate Base Price Estimation:** Estimates the fair market baseline price of any product directly from text attributes, category, weight, and pack quantity.
-2. **Promotional Discount Impact:** Applies dollar (`$`) or percentage (`%`) discounts dynamically post-inference, avoiding target leakage while producing accurate member checkout prices.
-3. **Uncertainty Calibration:** Generates 80% and 90% empirical prediction intervals calibrated using validation residual percentiles.
-4. **Category Benchmarking:** Evaluates where the predicted item sits within its subcategory distribution (Budget, Mid-tier, Premium/Bulk).
+
+1. Base Price Estimation: Estimates a product's baseline price using its title, category, description, weight, pack quantity, and other available attributes.
+2. Promotional Discount Calculation: Applies dollar ("$") or percentage ("%") discounts after price prediction to calculate the final member price.
+3. Prediction Intervals: Generates 80% and 90% empirical prediction intervals using validation residual percentiles.
+4. Category Benchmarking: Compares predicted prices with category distributions to classify products as Budget, Mid-tier, or Premium/Bulk.
 
 ---
 
-## 📂 Project Architecture & Directory Structure
+📂 Project Architecture & Directory Structure
 
-```text
 store/
 ├── data/
-│   └── costco_grocery.csv             # Scraped Costco grocery dataset (1,757 rows)
+│   └── costco_grocery.csv
 ├── notebooks/
-│   ├── costco_price_prediction.ipynb  # Interactive Jupyter walkthrough
-│   ├── train_eda_notebook.py          # Standalone commented exploratory script
-│   ├── generate_eda_plots.py          # Script generating high-resolution EDA figures
-│   └── eda_plots/                     # Exported EDA visualizations
+│   ├── costco_price_prediction.ipynb
+│   ├── train_eda_notebook.py
+│   ├── generate_eda_plots.py
+│   └── eda_plots/
 ├── src/
-│   ├── __init__.py                    # Python package initializer
-│   ├── preprocessing.py               # Custom scikit-learn transformers & pipeline builders
-│   ├── train.py                       # Automated training, 5-fold CV, Optuna tuning & artifact export
-│   └── predict.py                     # Production inference engine with confidence intervals
+│   ├── __init__.py
+│   ├── preprocessing.py
+│   ├── train.py
+│   └── predict.py
 ├── artifacts/
-│   ├── model.joblib                   # Serialized production pipeline
-│   ├── metadata.json                  # Model hyperparams, test metrics, and category statistics
-│   └── plots/                         # Feature importance and diagnostic plots
-├── app.py                             # Full-featured Streamlit web application
-├── requirements.txt                   # Pinned dependency requirements
-└── README.md                          # Comprehensive engineering documentation
-```
+│   ├── model.joblib
+│   ├── metadata.json
+│   └── plots/
+├── app.py
+├── requirements.txt
+└── README.md
 
 ---
 
-## 🔍 Step 1: Data Exploration & Cleaning
+🔍 Step 1: Data Exploration & Cleaning
 
-### Key Dataset Statistics
-- **Total Initial Rows:** 1,757 entries across 8 columns.
-- **Columns:** `Sub Category`, `Price`, `Discount`, `Rating`, `Title`, `Currency`, `Feature`, `Product Description`.
+Key Dataset Statistics
 
-### Data Cleaning Decisions & Justifications
-1. **Price Parsing & Range Resolution:**
-   - Raw prices were string-formatted with `$` and commas (e.g. `$56.99 `).
-   - 14 products contained price ranges (e.g. `$32.99through-$83.99` for simplehuman trash can liners of multiple sizes). These were resolved by calculating the **midpoint** of the range.
-   - 3 rows had null prices (warehouse-only items with no online price); these were dropped.
-   - 2 scraper error pages (`Title: "Page Not Found!"`) were detected and pruned.
-   - Final modeled dataset: **1,752 clean rows**.
-2. **Currency Verification:**
-   - `Currency` had only one unique value: `$` (USD) with 5 NaNs. Dropping or treating currency as constant is 100% justified.
-3. **Customer Rating Handling:**
-   - 61.2% of rows had missing ratings or `'No Reviews'`.
-   - Rather than dropping or arbitrary imputation, we extracted `rating_value`, `review_count`, and created an explicit boolean indicator: `rating_is_missing`. Missing ratings were then imputed with the median (4.5). In wholesale environments, the *absence* of customer reviews strongly signals commercial institutional supply rather than poor quality.
-4. **Outlier Treatment & Log Transformation:**
-   - Raw prices range from **$3.99 to $1,999.99** with a median of **$23.99** and mean of **$61.34**.
-   - Standard IQR outlier fences ($Q3 + 1.5 \times \text{IQR} = \$109.99$) flag 238 items (13.6% of data) as outliers.
-   - Inspection revealed these are **genuine luxury wholesale items** (e.g., *Plaza Golden Osetra Caviar Kilo Pack* at $1,999.99, *Whole Wheel Parmigiano Reggiano 72 lbs* at $949.99, *Japanese A5 Wagyu Tenderloin Roast* at $999.99).
-   - **Decision:** Do NOT silently drop luxury items. Instead, we train on the target $\log(1 + \text{Price})$:
-     $$\tilde{y} = \log(1 + y)$$
-     This compresses the severe right tail into an approximately bell-shaped distribution, stabilizing gradient updates across all models. Predictions are converted back using $\exp(\tilde{y}) - 1$.
+- Initial rows: 1,757
+- Original columns: 8
+- Columns: "Sub Category", "Price", "Discount", "Rating", "Title", "Currency", "Feature", "Product Description"
+- Final cleaned dataset: 1,752 rows
 
----
+Data Cleaning Decisions
 
-## 🛠️ Step 2: Feature Engineering & Extraction
+1. Price Parsing and Range Resolution
+   
+   - Converted string-formatted prices containing currency symbols and commas into numeric values.
+   - Resolved 14 price ranges by calculating their midpoints.
+   - Removed 3 rows with missing prices.
+   - Removed 2 scraper error pages identified by the title "Page Not Found!".
 
-Preprocessing is packaged into reusable scikit-learn transformers:
+2. Currency Verification
+   
+   - The "Currency" column contained only USD ("$") values, with 5 missing entries.
+   - Currency was treated as a constant rather than a predictive feature.
 
-1. **Physical Unit & Quantity Regex Extractor (`UnitFeatureExtractor`):**
-   - Extracts weight in ounces (`weight_oz`), normalizing from pounds (`lbs`), kilograms (`kg`), grams (`g`), and fluid ounces (`fl oz`).
-   - Extracts item count (`item_count`), capturing terms like `48 count`, `100 ct`, `14 servings`, `158 loads`.
-   - Extracts pack count (`pack_count`), capturing `2-pack`, `6-pack`, `12-pack`.
-   - Extracts text length, title length, and bulk/organic flags.
-2. **Text Representation:**
-   - Concatenates `Title + " " + Feature + " " + Product Description`.
-   - Baseline: `TfidfVectorizer` (1–2 ngrams, `max_features=4000`, `min_df=2`, `stop_words='english'`).
-   - Latent Semantic Analysis (`TruncatedSVD` with 50 components): Dense semantic projection capturing vocabulary nuances without requiring multi-gigabyte PyTorch transformer weights, ensuring sub-50ms web inference.
-3. **Categorical Encoding:**
-   - `OneHotEncoder(handle_unknown='ignore')` for the 19 distinct grocery subcategories.
+3. Customer Rating Handling
+   
+   - Approximately 61.2% of rows had missing ratings or "No Reviews".
+   - Extracted "rating_value" and "review_count" and created a "rating_is_missing" indicator.
+   - Missing numerical ratings were imputed using the median rating of 4.5.
+   - The missing-rating indicator preserves information that may help distinguish products with limited review data.
 
----
-
-## 🛡️ Step 4: Data Leakage Check (Crucial ML Engineering)
-
-A critical data leakage consideration arises from the `Discount` column:
-- In the scraped data, discounts appear as `"After $5 OFF"` or `"After $70 OFF"`.
-- Only **7.2% of items (126 of 1,752)** carry promotional discounts.
-
-### Leakage Analysis:
-1. **Target-Discount Confounding:** Promotional discounts are external marketing decisions applied *after* base pricing is determined. Feeding discount amounts as input features to predict product price creates a circular causal dependency.
-2. **Inference Failure:** When predicting the price of a standard catalog item, the discount is unknown. A model trained on discount features learns spurious correlations between discount size and item tier.
-
-### Empirical Validation:
-We trained two distinct pipeline variants across identical 80/10/10 splits:
-- **Variant A (With Discount Features):** Test $R^2 = 0.8661$, 5-Fold CV $R^2 = 0.8443$.
-- **Variant B (Without Discount Features - Selected):** Test $R^2 = 0.8655$, 5-Fold CV $R^2 = 0.8443$.
-
-**Conclusion:** Variant B matches Variant A's predictive accuracy while guaranteeing zero leakage. In production:
-$$\text{Base Price} = \hat{f}(\text{Title}, \text{Sub Category}, \text{Description}, \text{Units}, \text{Rating})$$
-$$\text{Final Price} = \max(0.50, \ \text{Base Price} - \text{Discount})$$
+4. Outlier Analysis and Log Transformation
+   
+   - Prices ranged from $3.99 to $1,999.99.
+   - Median price: $23.99.
+   - Mean price: $61.34.
+   - The IQR method identified 238 products (approximately 13.6%) as potential outliers.
+   
+   Inspection indicated that many high-priced products were legitimate premium or bulk items, such as caviar, whole Parmigiano Reggiano wheels, and Japanese A5 Wagyu.
+   
+   Decision: Retain legitimate high-priced products and apply a logarithmic transformation to the target variable:
+   
+   [
+   \tilde{y} = \log(1+y)
+   ]
+   
+   Predictions are converted back to the original price scale using:
+   
+   [
+   \hat{y} = \exp(\hat{\tilde{y}})-1
+   ]
+   
+   This transformation reduces the influence of the highly right-skewed price distribution.
 
 ---
 
-## 📊 Step 5: Model Performance Benchmarks
+🛠️ Step 2: Feature Engineering & Extraction
 
-All models were evaluated on the held-out 10% test set (176 unseen items). Metrics are reported on **original dollar units ($)** alongside log-space $R^2$:
+Preprocessing is organized into reusable scikit-learn transformers and pipeline components.
 
-| Model | Variant | 5-Fold CV $R^2$ (log) | Test MAE ($) | Test RMSE ($) | Test MAPE (%) | Test $R^2$ (log) |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Random Forest (Tuned)** | **Variant B** | **0.8994** | **$23.00** | **$91.76** | **23.52%** | **0.8654** |
-| Random Forest (Base) | Variant B | 0.8443 | $23.12 | $93.75 | 23.73% | 0.8655 |
-| Gradient Boosting | Variant B | 0.8462 | $24.71 | $98.12 | 24.46% | 0.8535 |
-| Ridge Regression | Variant B | 0.8173 | $25.29 | $107.03 | 27.10% | 0.8248 |
-| LightGBM | Variant B | 0.8247 | $25.96 | $109.15 | 27.07% | 0.8186 |
-| XGBoost | Variant B | 0.8378 | $26.11 | $109.28 | 26.96% | 0.8183 |
-| Random Forest | Variant A (Leak) | 0.8443 | $23.20 | $93.58 | 23.82% | 0.8661 |
-| Gradient Boosting | Variant A (Leak) | 0.8508 | $24.58 | $98.80 | 24.30% | 0.8513 |
+1. Physical Unit and Quantity Extraction
 
-### Hyperparameter Tuning (Optuna)
-- **Framework:** Optuna Tree-structured Parzen Estimator (TPE) sampler.
-- **Optimal Parameters:** `n_estimators=160`, `max_depth=24`, `min_samples_split=2`, `min_samples_leaf=1`, `max_features=0.468`, `n_components=50`.
-- **Top Feature Drivers:**
-  1. `Rating_Missing` & `Review_Count` (Institutional/bulk signal)
-  2. `Text_Semantic_SVD_5` & `Text_Semantic_SVD_2` (Luxury & bulk text semantics)
-  3. `Sub Category_Meat & Seafood` (High base asset value)
-  4. `Text_Length` & `Title_Length` (Product specification richness)
-  5. `Weight_oz` & `Item_Count` (Quantity scaling)
+The custom "UnitFeatureExtractor" extracts:
 
----
+- "weight_oz": Weight normalized to ounces from pounds, kilograms, grams, and fluid ounces where applicable.
+- "item_count": Counts and quantities, including servings and loads.
+- "pack_count": Multipack quantities such as 2-pack, 6-pack, and 12-pack.
+- Text length and title length.
+- Bulk and organic product indicators.
 
-## 💻 Step 6: Streamlit Web Application
+Note: Fluid ounces measure volume, not weight. They should be converted to weight only when the product's density is known.
 
-The Streamlit app (`app.py`) provides an interactive interface:
-- **Interactive Product Input:** Title, Category dropdown (19 categories), customer rating slider, unrated checkbox, bullet points, and product description.
-- **Quick-Fill Templates:** One-click pre-fills for Olive Oil, Salmon Case, Prebiotic Soda, and Caviar.
-- **Promotion Settings:** Toggle between Dollar (`$`) and Percentage (`%`) discounts.
-- **Live Metric Displays:** Base Price, Applied Discount, and Final Member Price.
-- **Uncertainty Bounds:** 80% and 90% confidence intervals.
-- **Category Benchmarking Chart:** Interactive Plotly boxplot visualizing the item's position relative to its category median and quartiles.
-- **Model Insights & EDA Tabs:** Live metrics table, feature importance visualization, and exploratory charts.
+2. Text Representation
+
+The following text fields are concatenated:
+
+"Title + Feature + Product Description"
+
+Text features are generated using:
+
+- TF-IDF: Unigrams and bigrams, with "max_features=4000", "min_df=2", and English stop-word removal.
+- Truncated SVD: Reduces the TF-IDF representation to 50 components for a compact semantic representation.
+
+This approach avoids the resource overhead of large transformer models.
+
+3. Categorical Encoding
+
+"OneHotEncoder(handle_unknown='ignore')" encodes the product subcategories and handles previously unseen categories during inference.
 
 ---
 
-## 🚀 Setup & Quickstart Guide
+🧠 Step 3: Modeling & Cross-Validation
 
-### 1. Prerequisites
-- Python 3.10+ (Tested on Python 3.10, 3.11, 3.12, 3.13)
+The training pipeline compares multiple regression algorithms to identify a suitable model for grocery price prediction.
 
-### 2. Environment Setup
-```powershell
-# Clone or navigate to the project directory
-cd "c:\Users\Muhammed Sajid\Documents\Projects\store"
+Models Evaluated
 
-# Create and activate virtual environment
+- Random Forest Regression
+- Gradient Boosting Regression
+- Ridge Regression
+- LightGBM
+- XGBoost
+
+Training Workflow
+
+1. Load and clean the grocery dataset.
+2. Extract numerical, categorical, and text-based features.
+3. Transform the target price using "log1p".
+4. Split the dataset into training, validation, and test sets.
+5. Evaluate candidate models using five-fold cross-validation.
+6. Compare model performance using MAE, RMSE, MAPE, and R².
+7. Tune selected Random Forest hyperparameters using Optuna.
+8. Evaluate the selected model on the held-out test set.
+9. Export the trained pipeline and metadata to the "artifacts/" directory.
+
+All learned preprocessing operations should be fitted using training data only. Validation and test data must remain separate from model fitting and hyperparameter selection.
+
+---
+
+🛡️ Step 4: Data Leakage Check (Crucial ML Engineering)
+
+The "Discount" column requires careful treatment because promotional discounts are applied to product prices and may not be available when estimating a new product's baseline price.
+
+In the scraped dataset, discounts appear in formats such as "After $5 OFF" and "After $70 OFF".
+
+Only 7.2% of the cleaned dataset (126 of 1,752 products) reportedly contains promotional discounts.
+
+Leakage Analysis
+
+1. Target-Discount Confounding: Including discount amounts as predictive features may introduce misleading relationships between promotional values and product prices.
+2. Inference Limitations: A new product's discount may be unknown when its baseline price is estimated.
+3. Feature Consistency: Training and inference should use the same feature definitions and preprocessing pipeline.
+
+Empirical Validation
+
+Two variants were evaluated using the same data split:
+
+Variant| Discount Features| Test R²| 5-Fold CV R²
+Variant A| Included| 0.8661| 0.8443
+Variant B| Excluded| 0.8655| 0.8443
+
+These figures are the reported experimental results and should be verified against the training artifacts.
+
+Selected approach: Variant B, which excludes discount information from baseline price prediction.
+
+The pricing workflow is:
+
+[
+\text{Base Price} =
+\hat{f}(\text{Title, Category, Description, Units, Rating})
+]
+
+For a fixed-dollar discount:
+
+[
+\text{Final Price} =
+\max(0.50,\ \text{Base Price}-\text{Discount})
+]
+
+For a percentage discount (d):
+
+[
+\text{Final Price} =
+\max\left(0.50,\ \text{Base Price}\left(1-\frac{d}{100}\right)\right)
+]
+
+These formulas assume a minimum displayed price of $0.50 and a valid discount. The application should validate discount inputs before applying them.
+
+---
+
+📊 Step 5: Model Performance Benchmarks
+
+The following table contains the reported evaluation results for the held-out test set of 176 products.
+
+Model| Variant| 5-Fold CV R² (log)| Test MAE| Test RMSE| Test MAPE| Test R² (log)
+Random Forest (Tuned)| B| 0.8994| $23.00| $91.76| 23.52%| 0.8654
+Random Forest (Base)| B| 0.8443| $23.12| $93.75| 23.73%| 0.8655
+Gradient Boosting| B| 0.8462| $24.71| $98.12| 24.46%| 0.8535
+Ridge Regression| B| 0.8173| $25.29| $107.03| 27.10%| 0.8248
+LightGBM| B| 0.8247| $25.96| $109.15| 27.07%| 0.8186
+XGBoost| B| 0.8378| $26.11| $109.28| 26.96%| 0.8183
+Random Forest| A| 0.8443| $23.20| $93.58| 23.82%| 0.8661
+Gradient Boosting| A| 0.8508| $24.58| $98.80| 24.30%| 0.8513
+
+Important: The original results contain a discrepancy between the tuned Random Forest's reported cross-validation score and the base model's score. The metric definitions and evaluation scripts should be checked before these values are presented as final verified results.
+
+Hyperparameter Tuning with Optuna
+
+- Framework: Optuna with a Tree-structured Parzen Estimator (TPE) sampler.
+- Reported optimal parameters:
+  - "n_estimators=160"
+  - "max_depth=24"
+  - "min_samples_split=2"
+  - "min_samples_leaf=1"
+  - "max_features=0.468"
+  - "n_components=50"
+
+Top Reported Feature Drivers
+
+1. Rating-missing indicators and review counts.
+2. Latent text features such as "Text_Semantic_SVD_5" and "Text_Semantic_SVD_2".
+3. Product subcategories, including "Meat & Seafood".
+4. Text length and title length.
+5. Product weight and item count.
+
+Feature importance indicates predictive association, not necessarily a causal relationship with price.
+
+---
+
+💻 Step 6: Streamlit Web Application
+
+The Streamlit interface, implemented in "app.py", provides the following features.
+
+Interactive Product Input
+
+- Product title.
+- Category selection from 19 subcategories.
+- Customer rating slider.
+- Unrated-product checkbox.
+- Product features and description.
+
+Quick-Fill Product Templates
+
+One-click templates for:
+
+- Olive Oil
+- Salmon Case
+- Prebiotic Soda
+- Caviar
+
+Promotional Pricing
+
+- Dollar-based discounts ("$").
+- Percentage-based discounts ("%").
+- Base price, applied discount, and final member price.
+
+Prediction Intervals
+
+Displays empirical 80% and 90% prediction intervals to communicate uncertainty in price estimates. These should not be interpreted as guaranteed ranges.
+
+Category Benchmarking
+
+An interactive Plotly boxplot compares the predicted product price with the corresponding category distribution.
+
+Model Insights and Exploratory Data Analysis
+
+The application also includes:
+
+- Model performance metrics.
+- Feature importance visualizations.
+- Exploratory data analysis charts.
+
+---
+
+🚀 Setup & Quickstart Guide
+
+1. Prerequisites
+
+- Python 3.10 or later.
+- Git (optional, for cloning the repository).
+- A compatible Windows, macOS, or Linux environment.
+
+Python 3.10–3.13 compatibility depends on the package versions specified in "requirements.txt".
+
+2. Set Up the Environment
+
+Navigate to the project directory and create a virtual environment.
+
+Windows PowerShell
+
+cd "C:\path\to\store"
+
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
-# Install dependencies
+python -m pip install --upgrade pip
 pip install -r requirements.txt
-```
 
-### 3. Run Training (End-to-End Pipeline)
-```powershell
+macOS / Linux
+
+cd /path/to/store
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+
+Replace the example directory with the actual location of your project.
+
+3. Train the Model
+
 python src/train.py
-```
-*Executes data cleaning, runs 5-fold CV across 5 algorithms, validates leakage variants, performs Optuna tuning, and writes `artifacts/model.joblib` and `artifacts/metadata.json`.*
 
-### 4. Launch the Streamlit App
-```powershell
+The training script is intended to perform data preprocessing, cross-validation, model comparison, hyperparameter tuning, and artifact export.
+
+Expected output files include:
+
+artifacts/
+├── model.joblib
+└── metadata.json
+
+The exact outputs depend on the implementation in "src/train.py".
+
+4. Launch the Streamlit Application
+
 streamlit run app.py
-```
-Open [http://localhost:8501](http://localhost:8501) in your browser.
 
-### 5. Run Standalone Inference
-```powershell
+Open the following URL in your browser:
+
+http://localhost:8501
+
+5. Run Standalone Inference
+
 python src/predict.py
-```
+
+This command requires "src/predict.py" to include an executable entry point. Otherwise, use the prediction functions from the application or a Python script.
 
 ---
 
-## ⚠️ Model Limitations & Real-World Considerations
+⚠️ Model Limitations & Real-World Considerations
 
-1. **Catalog Regionality:** Costco prices can vary between warehouse locations (e.g. Hawaii/Alaska vs contiguous US) and online delivery fees ($3.00/item delivery markup). The dataset reflects online delivery catalog pricing.
-2. **Text Representation Scalability:** TF-IDF with TruncatedSVD was selected over heavy transformer embeddings (`all-MiniLM-L6-v2`) to maintain sub-50ms inference latency without requiring 2.5GB PyTorch GPU runtimes. For production workloads with multi-language catalogs, fine-tuned dense embeddings can be swapped into `src/preprocessing.py`.
-3. **Extreme Luxury Long-Tail:** While log-transformation successfully prevents catastrophic loss gradients on $1,999.99 caviar, high-end commercial roasts have higher absolute dollar variance than everyday staples. The included residual percentiles communicate this uncertainty directly to users.
-#   G r o c e r y P r i c e  
- 
+1. Regional Price Variation
+
+Costco prices may vary by warehouse location and region. Online prices may also include delivery-related costs or markups. The dataset reflects the pricing represented in the scraped online catalog and may not represent every warehouse.
+
+2. Dataset Size and Representativeness
+
+The dataset contains approximately 1,752 cleaned products. This is relatively small for a production-grade pricing system and may not represent the full range of products, locations, seasons, or promotional conditions.
+
+Performance on unseen products should be evaluated before using the model for real purchasing or pricing decisions.
+
+3. Text Representation Scalability
+
+TF-IDF with Truncated SVD provides a compact representation without requiring a large transformer model. However, actual inference latency depends on hardware, pipeline implementation, and application overhead. Sub-50 ms inference should be confirmed through benchmarking rather than assumed.
+
+For multilingual catalogs or larger datasets, more advanced text representations could be considered.
+
+4. High-Value Products
+
+Log transformation reduces the influence of high prices during training but does not eliminate prediction errors. Premium products and commercial bulk items can have larger absolute dollar errors than everyday groceries.
+
+Prediction intervals help communicate uncertainty, but their coverage should be tested on representative, unseen data.
+
+5. Discount Assumptions
+
+Promotional prices may depend on membership eligibility, purchase quantities, coupon conditions, and promotion dates. The application calculates discounts using its configured rules and does not independently verify current Costco offers.
+
+6. Model Monitoring and Retraining
+
+Catalog prices and product availability change over time. A real-world deployment should periodically evaluate prediction errors, monitor data drift, validate newly collected data, and retrain the model when necessary.
+
+---
+
+📄 License and Disclaimer
+
+This project is intended for educational, analytical, and demonstration purposes. Predictions are estimates based on the available dataset and are not guaranteed to match current Costco prices.
+
+Costco is a registered trademark of Costco Wholesale Corporation. This project is not affiliated with or endorsed by Costco Wholesale Corporation.
