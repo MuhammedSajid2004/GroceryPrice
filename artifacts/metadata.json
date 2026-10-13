@@ -1,0 +1,415 @@
+{
+  "model_name": "Tuned Random Forest Regressor",
+  "variant": "Variant B (Without Discount Features - Safe Against Leakage)",
+  "training_date": "2026-10-13T07:14:24.080115",
+  "random_seed": 42,
+  "best_hyperparameters": {
+    "n_estimators": 160,
+    "max_depth": 24,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "max_features": 0.4680909155642152,
+    "n_components": 50
+  },
+  "metrics": {
+    "test_mae_dollars": 23.0,
+    "test_rmse_dollars": 91.76,
+    "test_r2_original": 0.6072,
+    "test_mape_percent": 23.52,
+    "test_r2_log": 0.8654,
+    "val_r2_log": 0.8994
+  },
+  "model_comparisons": [
+    {
+      "Model": "Ridge Regression",
+      "Variant": "Variant B",
+      "CV R2 (log)": "0.8178 +/- 0.0479",
+      "Test MAE ($)": "$28.76",
+      "Test RMSE ($)": "$119.92",
+      "Test MAPE (%)": "27.10%",
+      "Test R2 (log)": "0.8248"
+    },
+    {
+      "Model": "Gradient Boosting",
+      "Variant": "Variant B",
+      "CV R2 (log)": "0.8479 +/- 0.0243",
+      "Test MAE ($)": "$23.45",
+      "Test RMSE ($)": "$102.35",
+      "Test MAPE (%)": "24.46%",
+      "Test R2 (log)": "0.8535"
+    },
+    {
+      "Model": "Random Forest",
+      "Variant": "Variant B",
+      "CV R2 (log)": "0.8492 +/- 0.0301",
+      "Test MAE ($)": "$21.30",
+      "Test RMSE ($)": "$86.94",
+      "Test MAPE (%)": "23.73%",
+      "Test R2 (log)": "0.8655"
+    },
+    {
+      "Model": "XGBoost",
+      "Variant": "Variant B",
+      "CV R2 (log)": "0.8400 +/- 0.0322",
+      "Test MAE ($)": "$26.54",
+      "Test RMSE ($)": "$105.73",
+      "Test MAPE (%)": "26.96%",
+      "Test R2 (log)": "0.8183"
+    },
+    {
+      "Model": "LightGBM",
+      "Variant": "Variant B",
+      "CV R2 (log)": "0.8251 +/- 0.0331",
+      "Test MAE ($)": "$26.32",
+      "Test RMSE ($)": "$107.76",
+      "Test MAPE (%)": "27.07%",
+      "Test R2 (log)": "0.8186"
+    },
+    {
+      "Model": "Ridge Regression",
+      "Variant": "Variant A",
+      "CV R2 (log)": "0.8183 +/- 0.0488",
+      "Test MAE ($)": "$28.93",
+      "Test RMSE ($)": "$119.97",
+      "Test MAPE (%)": "27.01%",
+      "Test R2 (log)": "0.8257"
+    },
+    {
+      "Model": "Gradient Boosting",
+      "Variant": "Variant A",
+      "CV R2 (log)": "0.8496 +/- 0.0245",
+      "Test MAE ($)": "$23.45",
+      "Test RMSE ($)": "$102.44",
+      "Test MAPE (%)": "24.30%",
+      "Test R2 (log)": "0.8513"
+    },
+    {
+      "Model": "Random Forest",
+      "Variant": "Variant A",
+      "CV R2 (log)": "0.8484 +/- 0.0306",
+      "Test MAE ($)": "$21.22",
+      "Test RMSE ($)": "$85.81",
+      "Test MAPE (%)": "23.82%",
+      "Test R2 (log)": "0.8661"
+    },
+    {
+      "Model": "XGBoost",
+      "Variant": "Variant A",
+      "CV R2 (log)": "0.8414 +/- 0.0326",
+      "Test MAE ($)": "$26.67",
+      "Test RMSE ($)": "$106.40",
+      "Test MAPE (%)": "26.74%",
+      "Test R2 (log)": "0.8201"
+    },
+    {
+      "Model": "LightGBM",
+      "Variant": "Variant A",
+      "CV R2 (log)": "0.8269 +/- 0.0342",
+      "Test MAE ($)": "$26.29",
+      "Test RMSE ($)": "$108.72",
+      "Test MAPE (%)": "26.93%",
+      "Test R2 (log)": "0.8171"
+    }
+  ],
+  "prediction_intervals": {
+    "residual_q10_log": -0.36189857874289966,
+    "residual_q90_log": 0.33080875468658294,
+    "residual_q05_log": -0.5413844235618186,
+    "residual_q95_log": 0.47754246601119216
+  },
+  "subcategories": [
+    "Bakery & Desserts",
+    "Beverages & Water",
+    "Breakfast",
+    "Candy",
+    "Cleaning Supplies",
+    "Coffee",
+    "Deli",
+    "Floral",
+    "Gift Baskets",
+    "Household",
+    "Kirkland Signature Grocery",
+    "Laundry Detergent & Supplies",
+    "Meat & Seafood",
+    "Organic",
+    "Pantry & Dry Goods",
+    "Paper & Plastic Products",
+    "Poultry",
+    "Seafood",
+    "Snacks"
+  ],
+  "subcategory_stats": {
+    "Bakery & Desserts": {
+      "count": 33,
+      "median": 62.99,
+      "q25": 54.99,
+      "q75": 89.99,
+      "min": 24.99,
+      "max": 299.99,
+      "mean": 83.41,
+      "std": 52.6
+    },
+    "Beverages & Water": {
+      "count": 148,
+      "median": 21.99,
+      "q25": 17.56,
+      "q75": 37.99,
+      "min": 4.99,
+      "max": 549.99,
+      "mean": 36.7,
+      "std": 59.27
+    },
+    "Breakfast": {
+      "count": 21,
+      "median": 10.99,
+      "q25": 9.99,
+      "q75": 12.69,
+      "min": 8.19,
+      "max": 36.99,
+      "mean": 13.3,
+      "std": 6.88
+    },
+    "Candy": {
+      "count": 153,
+      "median": 19.99,
+      "q25": 15.99,
+      "q75": 34.99,
+      "min": 7.99,
+      "max": 54.99,
+      "mean": 25.11,
+      "std": 12.22
+    },
+    "Cleaning Supplies": {
+      "count": 94,
+      "median": 22.99,
+      "q25": 17.11,
+      "q75": 34.99,
+      "min": 8.99,
+      "max": 199.99,
+      "mean": 30.63,
+      "std": 25.29
+    },
+    "Coffee": {
+      "count": 95,
+      "median": 34.99,
+      "q25": 18.99,
+      "q75": 42.99,
+      "min": 4.99,
+      "max": 99.99,
+      "mean": 32.88,
+      "std": 15.33
+    },
+    "Deli": {
+      "count": 21,
+      "median": 199.99,
+      "q25": 124.99,
+      "q75": 279.99,
+      "min": 59.99,
+      "max": 1999.99,
+      "mean": 370.7,
+      "std": 474.71
+    },
+    "Floral": {
+      "count": 75,
+      "median": 59.99,
+      "q25": 49.99,
+      "q75": 69.99,
+      "min": 42.99,
+      "max": 384.99,
+      "mean": 79.54,
+      "std": 67.4
+    },
+    "Gift Baskets": {
+      "count": 89,
+      "median": 59.99,
+      "q25": 44.99,
+      "q75": 89.99,
+      "min": 11.99,
+      "max": 1999.99,
+      "mean": 118.74,
+      "std": 257.75
+    },
+    "Household": {
+      "count": 81,
+      "median": 17.99,
+      "q25": 12.79,
+      "q75": 26.99,
+      "min": 4.49,
+      "max": 117.79,
+      "mean": 28.34,
+      "std": 27.8
+    },
+    "Kirkland Signature Grocery": {
+      "count": 122,
+      "median": 16.99,
+      "q25": 12.99,
+      "q75": 22.99,
+      "min": 3.99,
+      "max": 949.99,
+      "mean": 28.12,
+      "std": 84.92
+    },
+    "Laundry Detergent & Supplies": {
+      "count": 39,
+      "median": 28.79,
+      "q25": 19.74,
+      "q75": 39.49,
+      "min": 10.79,
+      "max": 89.99,
+      "mean": 33.9,
+      "std": 20.75
+    },
+    "Meat & Seafood": {
+      "count": 143,
+      "median": 199.99,
+      "q25": 139.99,
+      "q75": 259.99,
+      "min": 14.99,
+      "max": 1099.99,
+      "mean": 231.53,
+      "std": 163.19
+    },
+    "Organic": {
+      "count": 33,
+      "median": 14.99,
+      "q25": 11.69,
+      "q75": 33.99,
+      "min": 9.49,
+      "max": 49.99,
+      "mean": 22.42,
+      "std": 14.15
+    },
+    "Pantry & Dry Goods": {
+      "count": 171,
+      "median": 14.99,
+      "q25": 10.99,
+      "q75": 26.99,
+      "min": 3.99,
+      "max": 349.99,
+      "mean": 29.1,
+      "std": 44.87
+    },
+    "Paper & Plastic Products": {
+      "count": 87,
+      "median": 19.99,
+      "q25": 16.19,
+      "q75": 28.99,
+      "min": 11.89,
+      "max": 79.99,
+      "mean": 25.35,
+      "std": 13.8
+    },
+    "Poultry": {
+      "count": 8,
+      "median": 154.99,
+      "q25": 147.49,
+      "q75": 179.99,
+      "min": 99.99,
+      "max": 219.99,
+      "mean": 159.99,
+      "std": 35.05
+    },
+    "Seafood": {
+      "count": 47,
+      "median": 199.99,
+      "q25": 144.99,
+      "q75": 249.99,
+      "min": 14.99,
+      "max": 379.99,
+      "mean": 195.52,
+      "std": 81.48
+    },
+    "Snacks": {
+      "count": 292,
+      "median": 17.24,
+      "q25": 12.99,
+      "q75": 23.99,
+      "min": 7.79,
+      "max": 109.99,
+      "mean": 21.54,
+      "std": 13.09
+    }
+  },
+  "top_features": [
+    {
+      "feature": "Rating_Missing",
+      "importance": 0.25760685710740033
+    },
+    {
+      "feature": "Review_Count",
+      "importance": 0.1695360692757192
+    },
+    {
+      "feature": "Text_Semantic_SVD_5",
+      "importance": 0.13375985746853278
+    },
+    {
+      "feature": "Text_Length",
+      "importance": 0.06944513198666735
+    },
+    {
+      "feature": "Sub Category_Meat & Seafood",
+      "importance": 0.035504660921879094
+    },
+    {
+      "feature": "Text_Semantic_SVD_2",
+      "importance": 0.028957784391434312
+    },
+    {
+      "feature": "Text_Semantic_SVD_7",
+      "importance": 0.026389802735100002
+    },
+    {
+      "feature": "Text_Semantic_SVD_6",
+      "importance": 0.018228533988196672
+    },
+    {
+      "feature": "Text_Semantic_SVD_9",
+      "importance": 0.015145350754967415
+    },
+    {
+      "feature": "Title_Length",
+      "importance": 0.014445359858483551
+    },
+    {
+      "feature": "Text_Semantic_SVD_14",
+      "importance": 0.010602886097012914
+    },
+    {
+      "feature": "Text_Semantic_SVD_15",
+      "importance": 0.009668315508276203
+    },
+    {
+      "feature": "Weight_oz",
+      "importance": 0.008189414513543035
+    },
+    {
+      "feature": "Text_Semantic_SVD_1",
+      "importance": 0.006957667777730287
+    },
+    {
+      "feature": "Text_Semantic_SVD_45",
+      "importance": 0.00666662305392863
+    },
+    {
+      "feature": "Text_Semantic_SVD_42",
+      "importance": 0.006059198587799433
+    },
+    {
+      "feature": "Text_Semantic_SVD_8",
+      "importance": 0.005880545482023815
+    },
+    {
+      "feature": "Text_Semantic_SVD_10",
+      "importance": 0.005820277875257097
+    },
+    {
+      "feature": "Text_Semantic_SVD_3",
+      "importance": 0.005763947339445731
+    },
+    {
+      "feature": "Text_Semantic_SVD_4",
+      "importance": 0.005702741205712505
+    }
+  ]
+}
