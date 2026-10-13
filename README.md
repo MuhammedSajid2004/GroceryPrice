@@ -1,150 +1,254 @@
 
-# 🛒 Costco Grocery Price Prediction & Analytics App
+# 🛒 Costco Grocery Price Prediction & Analytics
 
-An end-to-end Machine Learning application with an interactive Streamlit interface designed to predict grocery prices, estimate promotional discounts, and benchmark prices across Costco wholesale categories.
+<p align="center">
+  <strong>An ML-powered grocery price estimation and analytics platform</strong>
+  <br />
+  Predict product prices, simulate promotional discounts, and compare prices across grocery categories using machine learning.
+</p>
 
-Built using the scraped Costco catalog dataset (`GroceryDataset.csv` / `costco_grocery.csv`).
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Machine%20Learning-scikit--learn-orange?logo=scikitlearn&logoColor=white" alt="Scikit-learn" />
+  <img src="https://img.shields.io/badge/Interface-Streamlit-FF4B4B?logo=streamlit&logoColor=white" alt="Streamlit" />
+  <img src="https://img.shields.io/badge/Data-CSV-217346?logo=googlesheets&logoColor=white" alt="CSV" />
+  <img src="https://img.shields.io/badge/Status-Research%20Project-purple" alt="Research project" />
+</p>
 
 ---
 
 ## 📌 Table of Contents
 
-1. [Project Overview & Business Value](#-project-overview--business-value)
-2. [Project Architecture & Directory Structure](#-project-architecture--directory-structure)
-3. [Step 1: Data Exploration & Cleaning](#-step-1-data-exploration--cleaning)
-4. [Step 2: Feature Engineering & Extraction](#-step-2-feature-engineering--extraction)
-5. [Step 3: Modeling & Cross-Validation](#-step-3-modeling--cross-validation)
-6. [Step 4: Data Leakage Check](#-step-4-data-leakage-check-crucial-ml-engineering)
-7. [Step 5: Model Performance Benchmarks](#-step-5-model-performance-benchmarks)
-8. [Step 6: Streamlit Web Application](#-step-6-streamlit-web-application)
-9. [Setup & Quickstart Guide](#-setup--quickstart-guide)
-10. [Model Limitations & Real-World Considerations](#-model-limitations--real-world-considerations)
+- [Overview](#-overview)
+- [Key Features](#-key-features)
+- [Technology Stack](#-technology-stack)
+- [System Architecture](#-system-architecture)
+- [Dataset](#-dataset)
+- [Machine Learning Workflow](#-machine-learning-workflow)
+- [Model Evaluation](#-model-evaluation)
+- [Web Application](#-web-application)
+- [Project Structure](#-project-structure)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Limitations](#-limitations)
+- [Future Improvements](#-future-improvements)
+- [Disclaimer](#-disclaimer)
 
 ---
 
-## 🎯 Project Overview & Business Value
+## 🎯 Overview
 
-Wholesale grocery retailers like Costco have distinctive pricing patterns involving bulk multipacks, commercial quantities, premium wholesale products, and occasional manufacturer promotions.
+The **Costco Grocery Price Prediction & Analytics App** is a machine learning project that estimates grocery product prices using product information, category, quantity, ratings, and textual descriptions.
 
-This application provides:
+The project combines data preprocessing, feature engineering, regression models, hyperparameter tuning, and an interactive Streamlit dashboard into a single workflow.
 
-1. **Base Price Estimation:** Predicts a product's baseline price using its title, category, description, weight, pack quantity, and other attributes.
-2. **Promotional Discount Calculation:** Applies dollar (`$`) or percentage (`%`) discounts after price prediction to calculate the final member price.
-3. **Prediction Intervals:** Generates 80% and 90% empirical prediction intervals using validation residual percentiles.
-4. **Category Benchmarking:** Compares predicted prices with category distributions to classify products as Budget, Mid-tier, or Premium/Bulk.
+It is designed to explore how machine learning can support price estimation, promotional pricing analysis, and category-level price comparisons in a wholesale grocery catalog.
+
+### 💡 Problem Statement
+
+Grocery products vary significantly in price because of differences in brand, quantity, packaging, product category, and specifications. Bulk and premium products can also have prices substantially higher than everyday groceries.
+
+Estimating prices from product information is challenging because:
+
+- Product descriptions are often unstructured.
+- Product sizes and quantities use different units.
+- Grocery categories have different price distributions.
+- Promotional discounts can complicate price comparisons.
+- High-priced products create a highly skewed price distribution.
+
+### ✅ Proposed Solution
+
+This project builds a regression-based price prediction pipeline that extracts useful information from product attributes and text, estimates a baseline price, and provides interactive tools for exploring discounts and category benchmarks.
+
+### 🎯 Project Objectives
+
+- Estimate grocery product prices using machine learning.
+- Extract useful features from product titles and descriptions.
+- Compare multiple regression algorithms.
+- Reduce the effect of extreme prices using logarithmic target transformation.
+- Evaluate model performance using standard regression metrics.
+- Simulate promotional discounts.
+- Visualize product prices and model insights through Streamlit.
 
 ---
 
-## 📂 Project Architecture & Directory Structure
+## ✨ Key Features
 
-```text
-store/
-├── data/
-│   └── costco_grocery.csv
-├── notebooks/
-│   ├── costco_price_prediction.ipynb
-│   ├── train_eda_notebook.py
-│   ├── generate_eda_plots.py
-│   └── eda_plots/
-├── src/
-│   ├── __init__.py
-│   ├── preprocessing.py
-│   ├── train.py
-│   └── predict.py
-├── artifacts/
-│   ├── model.joblib
-│   ├── metadata.json
-│   └── plots/
-├── app.py
-├── requirements.txt
-└── README.md
+| Feature | Description |
+|---|---|
+| 🧠 Price Prediction | Estimates product prices from available product attributes. |
+| 🧹 Data Preprocessing | Cleans price values, missing data, and inconsistent formats. |
+| 🔎 Feature Engineering | Extracts quantities, weights, text features, and category information. |
+| 📊 Model Comparison | Evaluates multiple regression algorithms. |
+| ⚙️ Hyperparameter Tuning | Uses Optuna to search for improved model configurations. |
+| 🏷️ Discount Simulator | Calculates final prices after dollar or percentage discounts. |
+| 📈 Category Benchmarking | Compares predicted prices with category-level distributions. |
+| 🎯 Prediction Intervals | Displays empirical uncertainty intervals where supported by the trained pipeline. |
+| 🖥️ Interactive Dashboard | Provides product inputs, visualizations, and model insights. |
+
+---
+
+## 🧰 Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| Python | Core programming language |
+| Pandas & NumPy | Data manipulation and numerical operations |
+| Scikit-learn | Preprocessing, regression, and model evaluation |
+| TF-IDF | Text feature extraction |
+| Truncated SVD | Dimensionality reduction |
+| Optuna | Hyperparameter optimization |
+| Joblib | Model serialization |
+| Streamlit | Interactive web interface |
+| Plotly | Interactive charts |
+| Matplotlib | Exploratory data visualizations |
+| LightGBM & XGBoost | Additional regression candidates |
+
+The exact dependencies and versions are defined in `requirements.txt`.
+
+---
+
+## 🏗️ System Architecture
+
+The application follows a data-to-prediction workflow.
+
+```mermaid
+flowchart TD
+    A[Costco Grocery CSV Dataset] --> B[Data Cleaning]
+    B --> C[Feature Engineering]
+    C --> D[Text and Category Processing]
+    D --> E[Train and Evaluate Models]
+    E --> F[Hyperparameter Tuning]
+    F --> G[Selected Model Pipeline]
+    G --> H[Model Artifacts]
+    H --> I[Streamlit Application]
+    I --> J[Predicted Base Price]
+    J --> K[Discount Calculation]
+    K --> L[Final Price and Category Insights]
 ```
 
----
+### Workflow Explanation
 
-## 🔍 Step 1: Data Exploration & Cleaning
-
-### Key Dataset Statistics
-
-- **Initial Rows:** 1,757
-- **Original Columns:** 8
-- **Final Cleaned Dataset:** 1,752 rows
-- **Columns:** `Sub Category`, `Price`, `Discount`, `Rating`, `Title`, `Currency`, `Feature`, `Product Description`
-
-### Data Cleaning Decisions
-
-1. **Price Parsing & Range Resolution**
-   - Converted string-formatted prices containing currency symbols and commas into numeric values.
-   - Resolved 14 price ranges by calculating their midpoints.
-   - Removed 3 rows with missing prices.
-   - Removed 2 scraper error pages identified by the title `Page Not Found!`.
-
-2. **Currency Verification**
-   - The `Currency` column contained only USD (`$`) values, with 5 missing entries.
-   - Currency was treated as a constant rather than a predictive feature.
-
-3. **Customer Rating Handling**
-   - Approximately 61.2% of rows had missing ratings or `No Reviews`.
-   - Extracted `rating_value` and `review_count`.
-   - Created a `rating_is_missing` indicator and imputed missing numerical ratings using the median of 4.5.
-
-4. **Outlier Analysis & Log Transformation**
-   - Minimum price: $3.99
-   - Maximum price: $1,999.99
-   - Median price: $23.99
-   - Mean price: $61.34
-   - The IQR method identified 238 potential outliers.
-
-   High-priced products were retained because they represented legitimate premium and bulk products.
-
-   The target variable was transformed using:
-
-   \[
-   \tilde{y} = \log(1+y)
-   \]
-
-   Predictions are converted back to the original price scale using:
-
-   \[
-   \hat{y} = \exp(\hat{\tilde{y}})-1
-   \]
+1. **Data Collection:** Load the scraped grocery catalog.
+2. **Data Cleaning:** Parse prices and handle missing values and invalid records.
+3. **Feature Engineering:** Extract quantities, text information, ratings, and categories.
+4. **Model Training:** Compare regression algorithms using cross-validation.
+5. **Model Selection:** Tune and evaluate a candidate model.
+6. **Artifact Export:** Save the trained pipeline and associated metadata.
+7. **Inference:** Accept product details and generate a price estimate.
+8. **Visualization:** Display pricing results, discounts, uncertainty, and category comparisons.
 
 ---
 
-## 🛠️ Step 2: Feature Engineering & Extraction
+## 📦 Dataset
 
-Preprocessing is organized into reusable scikit-learn transformers and pipeline components.
+The project uses a scraped Costco grocery catalog stored in CSV format.
 
-### 1. Physical Unit & Quantity Extraction
+**Expected dataset files:**
 
-The custom `UnitFeatureExtractor` extracts:
+- `costco_grocery.csv`
+- `GroceryDataset.csv` (an alternative filename referenced in the original project)
 
-- `weight_oz`: Weight normalized to ounces.
-- `item_count`: Quantities such as servings and loads.
-- `pack_count`: Multipack quantities such as 2-pack and 12-pack.
-- Text length and title length.
-- Bulk and organic product indicators.
+### Dataset Summary
 
-### 2. Text Representation
+| Property | Reported Value |
+|---|---:|
+| Initial records | 1,757 |
+| Final cleaned records | 1,752 |
+| Original columns | 8 |
+| Distinct subcategories | 19 |
+| Products with reported discounts | 126 |
+| Missing or unavailable ratings | Approximately 61.2% |
 
-The following fields are concatenated:
+These statistics are based on the project's existing documentation and should be verified against the actual CSV file.
 
-`Title + Feature + Product Description`
+### Main Attributes
 
-- **TF-IDF:** Unigrams and bigrams with `max_features=4000`, `min_df=2`, and English stop-word removal.
-- **Truncated SVD:** Reduces the TF-IDF representation to 50 components.
+| Column | Description |
+|---|---|
+| `Title` | Product name |
+| `Sub Category` | Grocery product category |
+| `Price` | Product price |
+| `Discount` | Promotional discount information |
+| `Rating` | Customer rating information |
+| `Currency` | Currency representation |
+| `Feature` | Product highlights or specifications |
+| `Product Description` | Detailed product information |
 
-### 3. Categorical Encoding
+### Data Cleaning
 
-`OneHotEncoder(handle_unknown='ignore')` encodes product subcategories and supports previously unseen categories during inference.
+The preprocessing workflow addresses:
+
+- Conversion of formatted price strings into numerical values.
+- Resolution of price ranges using their midpoints.
+- Removal of records with missing prices.
+- Removal of scraper error pages.
+- Extraction of rating values and review counts.
+- Creation of missing-rating indicators.
+- Analysis of high-priced products and skewed price distributions.
+
+High-priced products are retained when they represent legitimate products rather than data errors.
 
 ---
 
-## 🧠 Step 3: Modeling & Cross-Validation
+## 🧪 Machine Learning Workflow
 
-The training pipeline compares multiple regression algorithms to identify a suitable model for grocery price prediction.
+### 1. Feature Engineering
 
-### Models Evaluated
+The preprocessing pipeline combines numerical, categorical, and text-based features.
+
+**Numerical features**
+- Product weight
+- Item quantity
+- Pack count
+- Title and description length
+- Rating and review information
+
+**Categorical features**
+- Grocery subcategory
+- Product classification indicators
+
+**Text features**
+- Product title
+- Product features
+- Product description
+
+A custom `UnitFeatureExtractor` is used to derive product quantities and other attributes from text, according to the original implementation.
+
+### 2. Text Processing
+
+TF-IDF transforms product text into numerical features.
+
+The documented configuration includes:
+
+- Unigrams and bigrams
+- `max_features=4000`
+- `min_df=2`
+- English stop-word removal
+
+Truncated SVD then reduces the resulting feature space to 50 components.
+
+### 3. Target Transformation
+
+Product prices have a right-skewed distribution, with a small number of expensive products.
+
+The training target is transformed using:
+
+\[
+y' = \log(1+y)
+\]
+
+The predicted value is converted back to the original price scale:
+
+\[
+\hat{y} = \exp(\hat{y}')-1
+\]
+
+This can reduce the influence of extreme values during model fitting, although it does not eliminate prediction errors.
+
+### 4. Regression Algorithms
+
+The project compares the following algorithms:
 
 - Random Forest Regression
 - Gradient Boosting Regression
@@ -152,252 +256,331 @@ The training pipeline compares multiple regression algorithms to identify a suit
 - LightGBM
 - XGBoost
 
-### Training Workflow
+Five-fold cross-validation is used in the documented training workflow.
 
-1. Load and clean the dataset.
-2. Extract numerical, categorical, and text-based features.
-3. Transform target prices using `log1p`.
-4. Split the data into training, validation, and test sets.
-5. Perform five-fold cross-validation.
-6. Compare models using MAE, RMSE, MAPE, and R².
-7. Tune Random Forest hyperparameters using Optuna.
-8. Evaluate the selected model on the held-out test set.
-9. Export the trained model and metadata.
+### 5. Hyperparameter Optimization
 
-All learned preprocessing operations should be fitted on training data only to avoid data leakage.
+Optuna is used to search for promising Random Forest configurations.
 
----
+Reported parameters include:
 
-## 🛡️ Step 4: Data Leakage Check (Crucial ML Engineering)
+```python
+{
+    "n_estimators": 160,
+    "max_depth": 24,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "max_features": 0.468,
+    "n_components": 50
+}
+```
 
-The `Discount` column requires careful treatment because promotional discounts may not be known when predicting a new product's baseline price.
+These are the documented settings and should be checked against the actual saved model and training script.
 
-Examples include `After $5 OFF` and `After $70 OFF`.
+### 6. Data Leakage Prevention
 
-Only 7.2% of the cleaned dataset (126 of 1,752 products) reportedly contains promotional discounts.
+The selected baseline-price prediction approach excludes promotional discount information from the model inputs.
 
-### Leakage Analysis
+This allows the model to estimate a baseline price independently of a discount that may be unknown at prediction time.
 
-1. **Target-Discount Confounding:** Discount amounts may introduce misleading relationships between promotions and product prices.
-2. **Inference Limitations:** A new product's discount may be unknown during prediction.
-3. **Feature Consistency:** Training and inference must use consistent feature definitions.
-
-### Empirical Validation
-
-Two variants were evaluated using the same data split.
-
-| Variant | Discount Features | Test R² | 5-Fold CV R² |
-|---|---|---:|---:|
-| Variant A | Included | 0.8661 | 0.8443 |
-| Variant B | Excluded | 0.8655 | 0.8443 |
-
-**Selected approach:** Variant B, which excludes discount information from baseline price prediction.
-
-The pricing workflow is:
-
-\[
-\text{Base Price} =
-\hat{f}(\text{Title, Category, Description, Units, Rating})
-\]
-
-For a fixed-dollar discount:
-
-\[
-\text{Final Price} =
-\max(0.50,\ \text{Base Price}-\text{Discount})
-\]
-
-For a percentage discount \(d\):
-
-\[
-\text{Final Price} =
-\max\left(0.50,\ \text{Base Price}\left(1-\frac{d}{100}\right)\right)
-\]
-
-These formulas assume a minimum displayed price of $0.50 and valid discount inputs.
+The discount simulator applies the supplied promotion after the base price has been predicted.
 
 ---
 
-## 📊 Step 5: Model Performance Benchmarks
+## 📊 Model Evaluation
 
-The following table contains the reported evaluation results for a held-out test set of 176 products.
+The following are the **reported results** from the original project documentation, not independently verified benchmark results.
 
-| Model | Variant | 5-Fold CV R² (log) | Test MAE | Test RMSE | Test MAPE | Test R² (log) |
+### Reported Model Comparison
+
+| Model | Variant | CV R² (log) | Test MAE | Test RMSE | Test MAPE | Test R² |
 |---|---|---:|---:|---:|---:|---:|
-| **Random Forest (Tuned)** | **B** | **0.8994** | **$23.00** | **$91.76** | **23.52%** | **0.8654** |
+| Random Forest (Tuned) | B | 0.8994 | $23.00 | $91.76 | 23.52% | 0.8654 |
 | Random Forest (Base) | B | 0.8443 | $23.12 | $93.75 | 23.73% | 0.8655 |
 | Gradient Boosting | B | 0.8462 | $24.71 | $98.12 | 24.46% | 0.8535 |
 | Ridge Regression | B | 0.8173 | $25.29 | $107.03 | 27.10% | 0.8248 |
 | LightGBM | B | 0.8247 | $25.96 | $109.15 | 27.07% | 0.8186 |
 | XGBoost | B | 0.8378 | $26.11 | $109.28 | 26.96% | 0.8183 |
-| Random Forest | A | 0.8443 | $23.20 | $93.58 | 23.82% | 0.8661 |
-| Gradient Boosting | A | 0.8508 | $24.58 | $98.80 | 24.30% | 0.8513 |
 
-**Note:** Verify the reported cross-validation and test metrics against the training artifacts before presenting them as final results.
+**Metrics at a glance**
 
-### Hyperparameter Tuning (Optuna)
+- **MAE:** Mean Absolute Error
+- **RMSE:** Root Mean Squared Error
+- **MAPE:** Mean Absolute Percentage Error
+- **R²:** Coefficient of Determination
 
-- **Framework:** Optuna with a Tree-structured Parzen Estimator (TPE) sampler.
-- **Reported Optimal Parameters:**
-  - `n_estimators=160`
-  - `max_depth=24`
-  - `min_samples_split=2`
-  - `min_samples_leaf=1`
-  - `max_features=0.468`
-  - `n_components=50`
+Lower MAE and RMSE generally indicate smaller prediction errors. Higher R² indicates a better fit relative to a baseline that predicts the target mean.
 
-### Top Reported Feature Drivers
+> **Evaluation note:** The reported tuned Random Forest cross-validation score differs from the base model's score, while their reported test scores are nearly identical. Confirm the metric calculations, target scale, data splits, and saved artifacts before drawing a final conclusion about which model performs best.
 
-1. Rating-missing indicators and review counts.
-2. Latent text features such as `Text_Semantic_SVD_5` and `Text_Semantic_SVD_2`.
-3. Product subcategories, including `Meat & Seafood`.
-4. Text length and title length.
-5. Product weight and item count.
+### Prediction Intervals
+
+The application is documented as providing 80% and 90% empirical prediction intervals based on validation residuals.
+
+These intervals represent estimated uncertainty rather than guaranteed minimum and maximum prices. Their actual coverage should be measured on unseen data.
 
 ---
 
-## 💻 Step 6: Streamlit Web Application
+## 🖥️ Web Application
 
-The Streamlit interface, implemented in `app.py`, provides the following features.
+The Streamlit application is implemented in `app.py`.
 
-### Interactive Product Input
+### Interactive Product Inputs
 
-- Product title.
-- Category selection from 19 subcategories.
-- Customer rating slider.
-- Unrated-product checkbox.
-- Product features and description.
+- Product title
+- Grocery subcategory
+- Customer rating
+- Missing-rating selection
+- Product features
+- Product description
 
 ### Quick-Fill Templates
+
+The documented interface includes templates for:
 
 - Olive Oil
 - Salmon Case
 - Prebiotic Soda
 - Caviar
 
-### Promotional Pricing
+### Price and Discount Analysis
 
-- Dollar-based discounts (`$`).
-- Percentage-based discounts (`%`).
-- Base price, applied discount, and final member price.
+The application is designed to display:
 
-### Prediction Intervals
+- Predicted base price
+- Applied discount
+- Final estimated price
+- Prediction intervals
+- Category-level price comparisons
 
-Displays empirical 80% and 90% prediction intervals to communicate uncertainty. These are not guaranteed price ranges.
+For a fixed-dollar discount:
 
-### Category Benchmarking
+\[
+P_f = \max(0.50,\ P_b-D)
+\]
 
-An interactive Plotly boxplot compares the predicted price with the corresponding category distribution.
+For a percentage discount \(d\):
 
-### Model Insights & EDA
+\[
+P_f = \max\left(0.50,\ P_b\left(1-\frac{d}{100}\right)\right)
+\]
 
-- Model performance metrics.
-- Feature importance visualizations.
-- Exploratory data analysis charts.
+Where:
+
+- \(P_f\) = Final estimated price
+- \(P_b\) = Predicted base price
+- \(D\) = Fixed-dollar discount
+- \(d\) = Percentage discount
+
+These formulas assume a minimum price of $0.50. The application should validate discount inputs and prevent invalid percentages.
+
+### Visual Analytics
+
+The documented dashboard includes:
+
+- Interactive Plotly category boxplots
+- Model performance comparisons
+- Feature importance visualizations
+- Exploratory data analysis charts
 
 ---
 
-## 🚀 Setup & Quickstart Guide
+## 📁 Project Structure
 
-### 1. Prerequisites
+```text
+store/
+│
+├── data/
+│   └── costco_grocery.csv
+│
+├── notebooks/
+│   ├── costco_price_prediction.ipynb
+│   ├── train_eda_notebook.py
+│   ├── generate_eda_plots.py
+│   └── eda_plots/
+│
+├── src/
+│   ├── __init__.py
+│   ├── preprocessing.py
+│   ├── train.py
+│   └── predict.py
+│
+├── artifacts/
+│   ├── model.joblib
+│   ├── metadata.json
+│   └── plots/
+│
+├── app.py
+├── requirements.txt
+└── README.md
+```
 
-- Python 3.10 or later.
-- Git (optional).
+### Important Files
 
-Package compatibility depends on the versions specified in `requirements.txt`.
+| File | Responsibility |
+|---|---|
+| `app.py` | Streamlit user interface |
+| `src/preprocessing.py` | Feature extraction and preprocessing |
+| `src/train.py` | Model training and evaluation |
+| `src/predict.py` | Prediction and inference logic |
+| `artifacts/model.joblib` | Serialized trained model pipeline |
+| `artifacts/metadata.json` | Model information and evaluation metadata |
+| `requirements.txt` | Python dependencies |
+| `notebooks/costco_price_prediction.ipynb` | Interactive analysis notebook |
 
-### 2. Environment Setup
+The structure represents the documented project layout. Individual files and generated artifacts must exist in the repository for the corresponding commands to work.
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+
+- Python 3.10 or later
+- Git (optional)
+- A terminal or command prompt
+
+### Step 1: Clone the Repository
+
+If the project is hosted on GitHub:
+
+```bash
+git clone <YOUR_REPOSITORY_URL>
+cd store
+```
+
+Alternatively, navigate directly to your existing project directory.
+
+### Step 2: Create a Virtual Environment
 
 **Windows PowerShell**
 
 ```powershell
-cd "C:\path\to\store"
-
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-
-python -m pip install --upgrade pip
-pip install -r requirements.txt
 ```
 
 **macOS / Linux**
 
 ```bash
-cd /path/to/store
-
 python3 -m venv .venv
 source .venv/bin/activate
+```
 
+### Step 3: Install Dependencies
+
+```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 3. Train the Model
+Ensure that `requirements.txt` includes all required libraries and compatible versions.
 
-```bash
-python src/train.py
-```
+---
 
-The training script is intended to perform preprocessing, cross-validation, model comparison, hyperparameter tuning, and artifact export.
+## ▶️ Usage
 
-Expected artifacts:
+### Option 1: Run the Existing Model
 
-```text
-artifacts/
-├── model.joblib
-└── metadata.json
-```
-
-Actual outputs depend on the implementation of `src/train.py`.
-
-### 4. Launch the Streamlit App
+If the trained artifacts are already available:
 
 ```bash
 streamlit run app.py
 ```
 
-Open http://localhost:8501 in your browser.
+Open the application at:
 
-### 5. Run Standalone Inference
+**http://localhost:8501**
+
+### Option 2: Train the Model
+
+To execute the training pipeline:
+
+```bash
+python src/train.py
+```
+
+The script should generate the required model artifacts according to its implementation.
+
+### Option 3: Run Standalone Prediction
 
 ```bash
 python src/predict.py
 ```
 
-This command requires `src/predict.py` to define an executable entry point.
+This command works as a standalone program only if `src/predict.py` defines the appropriate executable entry point.
+
+### Typical Workflow
+
+1. Launch the Streamlit application.
+2. Enter a product title and description.
+3. Select the product category.
+4. Provide rating and quantity details.
+5. Generate a baseline price estimate.
+6. Apply a simulated discount.
+7. Review the final estimated price and category comparison.
 
 ---
 
-## ⚠️ Model Limitations & Real-World Considerations
+## ⚠️ Limitations
 
-### 1. Catalog Regionality
+### Dataset Coverage
 
-Costco prices may vary by warehouse location and region. Online prices may include delivery-related costs. The dataset reflects the pricing represented in the scraped online catalog.
+The documented dataset contains approximately 1,752 cleaned records. It may not represent the full Costco catalog, all warehouse locations, or future price changes.
 
-### 2. Dataset Size
+### Price Variation
 
-The dataset contains approximately 1,752 cleaned products. It may not represent the full range of products, locations, seasons, or promotions. Performance on unseen products should be evaluated before practical deployment.
+Actual prices can vary by location, availability, delivery arrangements, and promotions.
 
-### 3. Text Representation Scalability
+### Prediction Accuracy
 
-TF-IDF with Truncated SVD provides a compact representation without requiring a large transformer model. Actual inference latency depends on hardware and implementation and should be benchmarked.
+Model errors may be larger for premium, unusual, or poorly represented products. A strong R² does not mean every individual prediction is accurate.
 
-### 4. High-Value Products
+### Discount Accuracy
 
-Log transformation reduces the influence of high prices during training but does not eliminate prediction errors. Premium and bulk products can have larger absolute dollar errors than everyday groceries.
+The discount simulator calculates prices using user-provided inputs. It does not independently verify current Costco offers or membership eligibility.
 
-### 5. Discount Assumptions
+### Prediction Intervals
 
-Promotional prices may depend on membership eligibility, purchase quantities, coupon conditions, and promotion dates. The application does not independently verify current Costco offers.
+Empirical prediction intervals require validation on representative unseen products. Their advertised coverage should not be assumed without calibration testing.
 
-### 6. Model Monitoring and Retraining
+### Production Readiness
 
-Catalog prices and product availability change over time. A real-world deployment should monitor prediction errors, detect data drift, validate new data, and retrain when necessary.
+The project demonstrates an end-to-end ML workflow, but production deployment would require additional testing, monitoring, data validation, and operational safeguards.
 
 ---
 
-## 📄 License & Disclaimer
+## 🔮 Future Improvements
 
-This project is intended for educational, analytical, and demonstration purposes. Predictions are estimates based on the available dataset and are not guaranteed to match current Costco prices.
+Potential extensions include:
+
+- [ ] Add automatic dataset refresh and validation.
+- [ ] Compare predictions across product categories and price ranges.
+- [ ] Add model versioning and experiment tracking.
+- [ ] Build an API for external applications.
+- [ ] Add historical price tracking when longitudinal data becomes available.
+- [ ] Evaluate performance on products from different locations.
+- [ ] Monitor prediction errors and data drift.
+- [ ] Add automated tests for preprocessing and inference.
+- [ ] Improve uncertainty calibration and subgroup evaluation.
+- [ ] Deploy the application to a cloud hosting platform.
+
+These are proposed improvements, not claims about existing functionality.
+
+---
+
+## 📄 Disclaimer
+
+This project is intended for educational, analytical, and demonstration purposes. Price predictions are estimates based on the available dataset and are not guaranteed to match current Costco prices.
+
+The dataset is described as a scraped product catalog. Users should ensure that their data collection and use comply with applicable terms, permissions, and laws.
 
 Costco is a registered trademark of Costco Wholesale Corporation. This project is not affiliated with or endorsed by Costco Wholesale Corporation.
+
+---
+
+<p align="center">
+  <strong>Built with Python, Machine Learning, and Streamlit</strong>
+  <br />
+  Exploring grocery pricing through data and predictive analytics.
+</p>
