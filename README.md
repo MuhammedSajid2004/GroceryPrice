@@ -4,7 +4,7 @@
 <p align="center">
   <strong>An ML-powered grocery price estimation and analytics platform</strong>
   <br />
-  Predict product prices, simulate promotional discounts, and compare prices across grocery categories using machine learning.
+  Predict product prices, simulate promotional discounts, and compare prices across grocery categories using machine learning and ai.
 </p>
 
 <p align="center">
