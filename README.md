@@ -1,6 +1,6 @@
 
 # 🛒 Costco Grocery Price Prediction & Analytics
-hi
+
 <p align="center">
   <strong>An ML-powered grocery price estimation and analytics platform</strong>
   <br />
